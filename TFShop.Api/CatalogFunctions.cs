@@ -16,10 +16,12 @@ namespace TFShop.Api
     {
 
         private readonly FetchData _fatch;
+        private readonly ProductRepository _repo;
 
-        public CatalogFunctions(FetchData fatch)
+        public CatalogFunctions(FetchData fatch, ProductRepository repo)
         {
             _fatch = fatch;
+            _repo = repo;
         }
 
         [FunctionName("GetData")]
@@ -30,6 +32,16 @@ namespace TFShop.Api
             Catalog catalog = await _fatch.GetValues();
 
             return new OkObjectResult(catalog);
+        }
+
+        [FunctionName("SeedData")]
+        public async Task<IActionResult> SeedData(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
+            ILogger log)
+        {
+            await _repo.SeedProducts();
+
+            return new OkResult();
         }
     }
 }

@@ -14,6 +14,8 @@ namespace TFShop.Api
         public override void Configure(IFunctionsHostBuilder builder)
         {
             builder.Services.AddScoped<FetchData>();
+            builder.Services.AddScoped<ProductRepository>();
+
         }
     }
 }

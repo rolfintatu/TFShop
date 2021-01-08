@@ -9,6 +9,8 @@ else
 {
     <h1>Catalog - V @catalog.Version</h1>
 
+    <button @onclick="SeedData" type="button" class="btn btn-primary">Seed Data</button>
+
     <table class="table">
         <thead>
             <tr>
@@ -38,5 +40,10 @@ else
     protected override async Task OnInitializedAsync()
     {
         catalog = await Http.GetFromJsonAsync<Catalog>("/api/GetData");
+    }
+
+    private async Task SeedData()
+    {
+        await Http.PostAsync("/api/seeddata", new StringContent(""));
     }
 }
