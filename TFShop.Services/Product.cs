@@ -1,9 +1,8 @@
-using Microsoft.Azure.Cosmos.Table;
-using System;
+﻿using System;
 
 namespace TFShop.Services
 {
-    public class Product : TableEntity
+    public class Product
     {
         public Product(Guid id, string name, double price)
         {
@@ -12,15 +11,8 @@ namespace TFShop.Services
             Price = price;
         }
 
-        public Guid Id {
-            get { return Guid.Parse(this.PartitionKey); }
-            set { this.PartitionKey = value.ToString(); } 
-        }
-
-        public string Name {
-            get { return this.RowKey; }
-            set { this.RowKey = value; } }
-
+        public Guid Id { get; set; }
+        public string Name { get; set; }
         public double Price { get; set; }
     }
 }
