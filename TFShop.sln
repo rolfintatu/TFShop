@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TFShop.Api", "TFShop.Api\TF
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TFShop.Services", "TFShop.Services\TFShop.Services.csproj", "{1DD87B71-A627-4734-A8FD-5A5A48630040}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TFShop.Services", "TFShop.Services\TFShop.Services.csproj", "{1DD87B71-A627-4734-A8FD-5A5A48630040}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

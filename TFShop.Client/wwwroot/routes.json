@@ -1,9 +1,13 @@
 ﻿{
   "routes": [
     {
-      "route": "/*",
+      "route": "/index",
       "serve": "/index.html",
       "statusCode": 200
+    },
+    {
+      "route": "/product",
+      "allowedRoles": [ "admin" ]
     }
   ]
 }
