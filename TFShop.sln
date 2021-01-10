@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TFShop.Client", "TFShop.Client\TFShop.Client.csproj", "{BB1AF0F7-9308-4E16-91E3-91627F7E4430}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TFShop.Client", "TFShop.Client\TFShop.Client.csproj", "{BB1AF0F7-9308-4E16-91E3-91627F7E4430}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TFShop.Api", "TFShop.Api\TFShop.Api.csproj", "{36492771-6887-4EEE-8AD5-85F0DB6796B4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TFShop.Api", "TFShop.Api\TFShop.Api.csproj", "{36492771-6887-4EEE-8AD5-85F0DB6796B4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TFShop.Services", "TFShop.Services\TFShop.Services.csproj", "{1DD87B71-A627-4734-A8FD-5A5A48630040}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TFShop.Services", "TFShop.Services\TFShop.Services.csproj", "{1DD87B71-A627-4734-A8FD-5A5A48630040}"
 EndProject
