@@ -8,6 +8,9 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using TFShop.Services;
+using Blazored.LocalStorage;
+using TFShop.Services.AggregateBasket;
+using TFShop.Client.ThirdParty;
 
 namespace TFShop.Client
 {
@@ -20,6 +23,9 @@ namespace TFShop.Client
 
             var BaseAddress = builder.Configuration["BaseAddress"] ?? builder.HostEnvironment.BaseAddress;
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(BaseAddress) });
+
+            builder.Services.AddBlazoredLocalStorage(x => x.JsonSerializerOptions.WriteIndented = true);
+            builder.Services.AddTransient<IBasketService, BasketService>();
 
             await builder.Build().RunAsync();
         }
