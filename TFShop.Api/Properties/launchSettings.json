@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "TFShop.Api": {
+      "commandName": "Project"
+    }
+  }
+}
