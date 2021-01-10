@@ -1,4 +1,4 @@
-﻿using Microsoft.Azure.Cosmos.Table;
+using Microsoft.Azure.Cosmos.Table;
 using System;
 
 namespace TFShop.Services

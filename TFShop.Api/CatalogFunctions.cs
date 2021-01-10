@@ -22,6 +22,7 @@ namespace TFShop.Api
         {
             _fatch = fatch;
             _repo = repo;
+
         }
 
         [FunctionName("GetData")]
