@@ -8,6 +8,19 @@ namespace TFShop.Services.AggregateBasket
     public class BasketItem : TableEntity
     {
 
+        public BasketItem()
+        {
+
+        }
+
+        public BasketItem(Guid basketId, Guid productId, int quantity, double price)
+        {
+            BasketId = basketId;
+            ProductId = productId;
+            Quantity = quantity;
+            Price = price;
+        }
+
         [IgnoreProperty]
         public Guid BasketId {
             get { return Guid.Parse(PartitionKey); }
@@ -17,7 +30,7 @@ namespace TFShop.Services.AggregateBasket
         [IgnoreProperty]
         public Guid ProductId {
             get { return Guid.Parse(RowKey); } 
-            set { PartitionKey = value.ToString(); } 
+            set { RowKey = value.ToString(); } 
         }
 
         public int Quantity { get; set; }

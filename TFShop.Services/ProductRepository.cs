@@ -1,6 +1,7 @@
 ﻿using Microsoft.Azure.Cosmos.Table;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -26,5 +27,18 @@ namespace TFShop.Services
             }
         }
 
+        public Task<Product> GetProductById(Guid productId)
+        {
+
+            var result = _table.CreateQuery<Product>()
+                .Where(x => x.Id == productId);
+
+            return Task.FromResult(result.FirstOrDefault());
+        }
+
+        public Task<List<Product>> GetProducts()
+        {
+            return Task.FromResult( _table.CreateQuery<Product>().ToList());
+        }
     }
 }

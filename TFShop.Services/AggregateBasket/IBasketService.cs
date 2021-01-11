@@ -8,5 +8,6 @@ namespace TFShop.Services.AggregateBasket
     public interface IBasketService
     {
         Task CreateBasket();
+        Task AddItemToBasket(Guid itemId);
     }
 }

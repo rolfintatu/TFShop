@@ -5,6 +5,10 @@ namespace TFShop.Services
 {
     public class Product : TableEntity
     {
+        public Product()
+        {
+        }
+
         public Product(Guid id, string name, double price)
         {
             Id = id;

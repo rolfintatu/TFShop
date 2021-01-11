@@ -14,16 +14,10 @@ namespace TFShop.Services
 
         public BaseRepository()
         {
-            try
-            {
-                _account = CloudStorageAccount.Parse(Environment.GetEnvironmentVariable("AzureTableStorage"));
-                CloudTableClient _tableClient = _account.CreateCloudTableClient(new TableClientConfiguration());
-                _table = _tableClient.GetTableReference(TABLE_NAME);
-                _table.CreateIfNotExistsAsync();
-            }catch(Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
+            _account = CloudStorageAccount.Parse(Environment.GetEnvironmentVariable("AzureTableStorage"));
+            CloudTableClient _tableClient = _account.CreateCloudTableClient(new TableClientConfiguration());
+            _table = _tableClient.GetTableReference(TABLE_NAME);
+            _table.CreateIfNotExistsAsync();
         }
 
     }
