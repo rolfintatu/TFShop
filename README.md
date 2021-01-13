@@ -1,2 +1,2 @@
 # TFShop
-A shopping web site made with Azure Static Web App.
+A shopping web site using Azure Static Web App.
