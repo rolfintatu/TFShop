@@ -9,5 +9,6 @@ namespace TFShop.Services.AggregateBasket
     {
         Task CreateBasket();
         Task AddItemToBasket(Guid itemId);
+        Task<List<BasketItem>> GetBasketItems();
     }
 }

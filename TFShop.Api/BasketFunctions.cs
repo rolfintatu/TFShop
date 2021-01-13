@@ -10,6 +10,8 @@ using TFShop.Services.AggregateBasket;
 using TFShop.Services;
 using System.Collections.Generic;
 using System.Text.Json;
+using Microsoft.Extensions.Primitives;
+using System.Linq;
 
 namespace TFShop.Api
 {
@@ -81,6 +83,23 @@ namespace TFShop.Api
             }
             else
                 return new BadRequestResult();
+        }
+
+        [FunctionName("GetCartItems")]
+        public async Task<IActionResult> GetBasketItems(
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req,
+            ILogger log
+            )
+        {
+            var queryValues = req.GetQueryParameterDictionary();
+            var items = await _itemsRepo.GetBasketItems(
+                Guid.Parse(queryValues.Where(x => x.Key == "basketId").First().Value)
+                );
+
+            if (items?.Count != 0)
+                return new OkObjectResult(items);
+            else
+                return new NotFoundResult();
         }
 
         internal class HttpRes

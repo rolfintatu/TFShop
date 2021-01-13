@@ -33,5 +33,13 @@ namespace TFShop.Services.AggregateBasket
 
             return Task.FromResult(basketItems.Count != 0 ? basketItems.First().Quantity : 0);
         }
+
+        public Task<List<BasketItem>> GetBasketItems(Guid basketId)
+        {
+            var items = _table.CreateQuery<BasketItem>()
+                .Where(y => y.PartitionKey == basketId.ToString());
+
+            return Task.FromResult(items.ToList());
+        }
     }
 }

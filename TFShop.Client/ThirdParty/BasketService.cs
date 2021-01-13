@@ -7,6 +7,7 @@ using Blazored.LocalStorage;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Net.Http.Json;
 
 namespace TFShop.Client.ThirdParty
 {
@@ -63,6 +64,16 @@ namespace TFShop.Client.ThirdParty
                 );
             }
         }
+
+        public async Task<List<BasketItem>> GetBasketItems()
+        {
+            var basketId = await _localStorage.GetItemAsync<string>("_basket");
+
+            var result = await _httpClient.GetFromJsonAsync<List<BasketItem>>($"/api/GetCartItems?basketId={basketId}");
+
+            return result;
+        }
+
     }
 
     internal class HttpRes

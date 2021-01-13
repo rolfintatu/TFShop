@@ -23,7 +23,7 @@ else
             @foreach (var product in products)
             {
                 <tr>
-                    <td>@product.Id</td>
+                    <td>@product.Id.ToString().Substring(0,8)</td>
                     <td>@product.Name</td>
                     <td>@product.Price</td>
                     <td><button type="button" 
