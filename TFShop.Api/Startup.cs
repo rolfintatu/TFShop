@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using TFShop.Services;
+using TFShop.Services.AggregateBasket;
+
 
 [assembly: FunctionsStartup(typeof(TFShop.Api.Startup))]
 
@@ -14,6 +16,9 @@ namespace TFShop.Api
         public override void Configure(IFunctionsHostBuilder builder)
         {
             builder.Services.AddScoped<FetchData>();
+            builder.Services.AddScoped<ProductRepository>();
+            builder.Services.AddScoped<BasketRepository>();
+            builder.Services.AddTransient<BasketItemRepository>();
         }
     }
 }

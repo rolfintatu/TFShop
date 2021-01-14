@@ -1,13 +1,14 @@
 ﻿@page "/fetchdata"
 @inject HttpClient Http
+@inject IBasketService _basket
 
-@if (catalog == null)
+@if (products == null)
 {
     <p><em>Loading...</em></p>
 }
 else
 {
-    <h1>Catalog - V @catalog.Version</h1>
+    <h1>Catalog</h1>
 
     <table class="table">
         <thead>
@@ -19,13 +20,15 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var product in catalog.Products)
+            @foreach (var product in products)
             {
                 <tr>
-                    <td>@product.Id</td>
+                    <td>@product.Id.ToString().Substring(0,8)</td>
                     <td>@product.Name</td>
                     <td>@product.Price</td>
-                    <td><button type="button" class="btn btn-primary">Add</button></td>
+                    <td><button type="button" 
+                                @onclick="@(() => AddToBasket(product.Id))" 
+                                class="btn btn-primary">Add</button></td>
                 </tr>
             }
         </tbody>
@@ -33,10 +36,15 @@ else
 }
 
 @code {
-    private Catalog catalog = new Catalog();
+    private List<TFShop.Services.Product> products = new List<TFShop.Services.Product>();
 
     protected override async Task OnInitializedAsync()
     {
-        catalog = await Http.GetFromJsonAsync<Catalog>("/api/GetData");
+        products = await Http.GetFromJsonAsync<List<TFShop.Services.Product>>("/api/GetProducts");
+    }
+
+    private async Task AddToBasket(Guid id)
+    {
+        await _basket.AddItemToBasket(id);
     }
 }
