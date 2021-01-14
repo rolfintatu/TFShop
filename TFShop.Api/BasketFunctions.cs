@@ -64,7 +64,8 @@ namespace TFShop.Api
                             Guid.Parse(basketId),
                             Guid.Parse(itemId),
                             1,
-                            product.Price)
+                            product.Price,
+                            product.Name)
                         );
                     return new OkResult();
                 }
@@ -75,7 +76,8 @@ namespace TFShop.Api
                             Guid.Parse(basketId),
                             product.Id,
                             quantityIfExixt += 1,
-                            product.Price)
+                            product.Price,
+                            product.Name)
                         );
                     return new OkResult();
                 }
@@ -102,12 +104,6 @@ namespace TFShop.Api
                 return new OkObjectResult(items);
             else
                 return new NotFoundResult();
-        }
-
-        internal class HttpRes
-        {
-            public string itemId { get; set; }
-            public string basketId { get; set; }
         }
     }
 }

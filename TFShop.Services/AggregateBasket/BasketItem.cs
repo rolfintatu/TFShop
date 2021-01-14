@@ -7,18 +7,15 @@ namespace TFShop.Services.AggregateBasket
 {
     public class BasketItem : TableEntity
     {
+        public BasketItem() { }
 
-        public BasketItem()
-        {
-
-        }
-
-        public BasketItem(Guid basketId, Guid productId, int quantity, double price)
+        public BasketItem(Guid basketId, Guid productId, int quantity, double price, string name)
         {
             BasketId = basketId;
             ProductId = productId;
             Quantity = quantity;
             Price = price;
+            Name = name;
         }
 
         [IgnoreProperty]
@@ -33,6 +30,7 @@ namespace TFShop.Services.AggregateBasket
             set { RowKey = value.ToString(); } 
         }
 
+        public string Name { get; set; }
         public int Quantity { get; set; }
         public double Price { get; set; }
 
