@@ -32,7 +32,7 @@ namespace TFShop.Api
 
         [FunctionName("CreateBasket")]
         public async Task<IActionResult> CreateBasket(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
             ILogger log)
         {
             Basket basket = new Basket();
@@ -48,22 +48,21 @@ namespace TFShop.Api
             ILogger log)
         {
 
-            //var itemid = req.Form["itemid"].ToString();
+            var itemId = req.Form["itemid"].ToString();
+            var basketId = req.Form["basketId"].ToString();
 
-            var result = await JsonSerializer.DeserializeAsync<HttpRes>(req.Body);
+            var product = await _productRepo.GetProductById(Guid.Parse(itemId));
 
-            var product = await _productRepo.GetProductById(Guid.Parse(result.itemId));
+            var quantityIfExixt = await _itemsRepo.GetQuantityIfExist(product.Id, Guid.Parse(basketId));
 
-            var quantityIfExixt = await _itemsRepo.GetQuantityIfExist(product.Id, Guid.Parse(result.basketId));
-
-            if (result.basketId != null)
+            if (basketId != null)
             {
                 if (quantityIfExixt == 0)
                 {
                     await _itemsRepo.AddItemToBasketAsync(
                         new BasketItem(
-                            Guid.Parse(result.basketId),
-                            Guid.Parse(result.itemId),
+                            Guid.Parse(basketId),
+                            Guid.Parse(itemId),
                             1,
                             product.Price)
                         );
@@ -73,15 +72,14 @@ namespace TFShop.Api
                 {
                     await _itemsRepo.AddItemToBasketAsync(
                         new BasketItem(
-                            Guid.Parse(result.basketId),
+                            Guid.Parse(basketId),
                             product.Id,
                             quantityIfExixt += 1,
                             product.Price)
                         );
                     return new OkResult();
                 }
-            }
-            else
+            } else
                 return new BadRequestResult();
         }
 
@@ -91,12 +89,16 @@ namespace TFShop.Api
             ILogger log
             )
         {
-            var queryValues = req.GetQueryParameterDictionary();
+            var basketId = req.Query["basketId"].ToString();
+
+            if (string.IsNullOrWhiteSpace(basketId))
+                return new OkResult();
+
             var items = await _itemsRepo.GetBasketItems(
-                Guid.Parse(queryValues.Where(x => x.Key == "basketId").First().Value)
+                    Guid.Parse(basketId)
                 );
 
-            if (items?.Count != 0)
+            if (items.Count != 0)
                 return new OkObjectResult(items);
             else
                 return new NotFoundResult();

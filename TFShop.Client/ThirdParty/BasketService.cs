@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Net.Http.Json;
+using TFShop.Services.Models;
 
 namespace TFShop.Client.ThirdParty
 {
@@ -37,12 +38,7 @@ namespace TFShop.Client.ThirdParty
                 { "ItemId", itemId.ToString() }
             };
 
-            var contentJson = new HttpRes { basketId = basketId, itemId = itemId.ToString() };
-            
-
-            var finall = new StringContent(JsonSerializer.Serialize(contentJson), Encoding.UTF8);
-
-            var response = await _httpClient.PostAsync("api/AddItemToBasket", finall);
+            var response = await _httpClient.PostAsync("api/AddItemToBasket", new FormUrlEncodedContent(content));
         }
 
         /// <summary>
@@ -65,13 +61,26 @@ namespace TFShop.Client.ThirdParty
             }
         }
 
-        public async Task<List<BasketItem>> GetBasketItems()
+        public async Task<List<BasketItemModel>> GetBasketItems()
         {
             var basketId = await _localStorage.GetItemAsync<string>("_basket");
 
-            var result = await _httpClient.GetFromJsonAsync<List<BasketItem>>($"/api/GetCartItems?basketId={basketId}");
+            if (string.IsNullOrWhiteSpace(basketId))
+                return null;
 
-            return result;
+            var result = await _httpClient.GetAsync($"/api/GetCartItems?basketId={basketId}");
+
+            if (result.IsSuccessStatusCode)
+            {
+                var items = JsonSerializer.Deserialize<List<BasketItemModel>>(
+                        await result.Content.ReadAsStringAsync(),
+                        new JsonSerializerOptions() { PropertyNameCaseInsensitive = true }
+                    );
+
+                return items;
+            }
+
+            return null;
         }
 
     }
