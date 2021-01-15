@@ -9,11 +9,10 @@ namespace TFShop.Services.AggregateBasket
     {
         public BasketItem() { }
 
-        public BasketItem(Guid basketId, Guid productId, int quantity, double price, string name)
+        public BasketItem(Guid basketId, Guid productId, double price, string name)
         {
             BasketId = basketId;
             ProductId = productId;
-            Quantity = quantity;
             Price = price;
             Name = name;
         }
@@ -31,8 +30,13 @@ namespace TFShop.Services.AggregateBasket
         }
 
         public string Name { get; set; }
-        public int Quantity { get; set; }
+        public int Quantity { get; set; } = 1;
         public double Price { get; set; }
 
+        public BasketItem IncreaseQuantity()
+        {
+            Quantity += 1;
+            return this;
+        }
     }
 }

@@ -11,30 +11,32 @@ namespace TFShop.Services.AggregateBasket
     {
         protected override string TABLE_NAME { get; set; } = "BasketItems";
 
-        public Task<List<BasketItem>> GetItemsByBasketAsync(Guid basketId)
+        public Task<BasketItem> GetItemFromBasketAsync(string basketId, string itemId)
         {
-            var result = _table.CreateQuery<BasketItem>().Where(x => x.BasketId == basketId);
+            var item = _table.CreateQuery<BasketItem>()
+                .Where(x => x.PartitionKey == basketId && x.RowKey == itemId)
+                .FirstOrDefault();
 
-            if (result != null)
-                return Task.FromResult(result.ToList());
-            else
-                return null;
+            return item != null 
+                ? Task.FromResult(item)
+                : null;
         }
 
-        public async Task AddItemToBasketAsync(BasketItem item)
+        public async Task InsertOrMerge(BasketItem item)
         {
             await _table.ExecuteAsync(TableOperation.InsertOrMerge(item));
         }
 
-        public Task<int> GetQuantityIfExist(Guid itemId, Guid basketId)
+        public Task<bool> IsInBasket(string itemId, string basketId)
         {
-            var basketItems = _table.CreateQuery<BasketItem>()
-                .Where(x => x.RowKey == itemId.ToString() && x.PartitionKey == basketId.ToString()).ToList();
+            var isInBasket = _table.CreateQuery<BasketItem>()
+                    .Where(x => x.RowKey == itemId && x.PartitionKey == basketId)
+                    .FirstOrDefault();
 
-            return Task.FromResult(basketItems.Count != 0 ? basketItems.First().Quantity : 0);
+            return Task.FromResult(isInBasket == null ? false : true);
         }
 
-        public Task<List<BasketItem>> GetBasketItems(Guid basketId)
+        public Task<List<BasketItem>> GetBasketItems(string basketId)
         {
             var items = _table.CreateQuery<BasketItem>()
                 .Where(y => y.PartitionKey == basketId.ToString());

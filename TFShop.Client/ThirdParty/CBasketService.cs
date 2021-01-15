@@ -12,16 +12,15 @@ using TFShop.Services.Models;
 
 namespace TFShop.Client.ThirdParty
 {
-    public class BasketService : IBasketService
+    public class CBasketService : Services.AggregateBasket.BasketService
     {
-
         private readonly ILocalStorageService _localStorage;
         private readonly HttpClient _httpClient;
 
-        public BasketService(ILocalStorageService localStorage, HttpClient httpClient)
+        public CBasketService(ILocalStorageService localStorage, HttpClient httpClient)
         {
-            _localStorage = localStorage ?? throw new ArgumentNullException(nameof(BasketService));
-            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(BasketService));
+            _localStorage = localStorage ?? throw new ArgumentNullException(nameof(CBasketService));
+            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(CBasketService));
             _httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
         }
 
@@ -41,23 +40,20 @@ namespace TFShop.Client.ThirdParty
             var response = await _httpClient.PostAsync("api/AddItemToBasket", new FormUrlEncodedContent(content));
         }
 
-        /// <summary>
-        /// Create a basket
-        /// </summary>
-        /// <returns></returns>
         public async Task CreateBasket()
         {
-            var hasABasket = string.IsNullOrEmpty(await _localStorage.GetItemAsync<string>("_basket"))
+            //Check if already exist a basket id into local storage
+            var hasABasket = string.IsNullOrEmpty(
+                await _localStorage.GetItemAsStringAsync("_basket"))
                 ? false
                 : true;
 
             if (!hasABasket) {
                 var response = await _httpClient.PostAsync("api/CreateBasket", new StringContent(""));
-
                 if(response.IsSuccessStatusCode)
-                await _localStorage.SetItemAsync<string>(
-                    "_basket", await response.Content.ReadAsStringAsync()
-                );
+                    await _localStorage.SetItemAsync<string>(
+                        "_basket", await response.Content.ReadAsStringAsync()
+                    );
             }
         }
 
@@ -68,12 +64,12 @@ namespace TFShop.Client.ThirdParty
             if (string.IsNullOrWhiteSpace(basketId))
                 return null;
 
-            var result = await _httpClient.GetAsync($"/api/GetCartItems?basketId={basketId}");
+            var response = await _httpClient.GetAsync($"/api/GetCartItems?basketId={basketId}");
 
-            if (result.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
             {
                 var items = JsonSerializer.Deserialize<List<BasketItemModel>>(
-                        await result.Content.ReadAsStringAsync(),
+                        await response.Content.ReadAsStringAsync(),
                         new JsonSerializerOptions() { PropertyNameCaseInsensitive = true }
                     );
 
@@ -82,12 +78,5 @@ namespace TFShop.Client.ThirdParty
 
             return null;
         }
-
-    }
-
-    internal class HttpRes
-    {
-        public string itemId { get; set; }
-        public string basketId { get; set; }
     }
 }

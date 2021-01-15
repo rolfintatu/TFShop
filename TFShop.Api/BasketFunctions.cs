@@ -51,38 +51,27 @@ namespace TFShop.Api
             var itemId = req.Form["itemid"].ToString();
             var basketId = req.Form["basketId"].ToString();
 
-            var product = await _productRepo.GetProductById(Guid.Parse(itemId));
+            var isInBasket = await _itemsRepo.IsInBasket(itemId, basketId);
 
-            var quantityIfExixt = await _itemsRepo.GetQuantityIfExist(product.Id, Guid.Parse(basketId));
-
-            if (basketId != null)
+            if (!string.IsNullOrEmpty(basketId))
             {
-                if (quantityIfExixt == 0)
+                if (!isInBasket)
                 {
-                    await _itemsRepo.AddItemToBasketAsync(
-                        new BasketItem(
-                            Guid.Parse(basketId),
-                            Guid.Parse(itemId),
-                            1,
-                            product.Price,
-                            product.Name)
-                        );
+                    var product = await _productRepo.GetProductById(Guid.Parse(itemId));
+                    await _itemsRepo.InsertOrMerge(
+                        product.Zip(basketId));
                     return new OkResult();
                 }
                 else
                 {
-                    await _itemsRepo.AddItemToBasketAsync(
-                        new BasketItem(
-                            Guid.Parse(basketId),
-                            product.Id,
-                            quantityIfExixt += 1,
-                            product.Price,
-                            product.Name)
-                        );
+                    var basketItem = await _itemsRepo.GetItemFromBasketAsync(basketId, itemId);
+                    basketItem.IncreaseQuantity();
+                    await _itemsRepo.InsertOrMerge(basketItem);
                     return new OkResult();
                 }
-            } else
-                return new BadRequestResult();
+            }
+
+            return new BadRequestResult();
         }
 
         [FunctionName("GetCartItems")]
@@ -96,14 +85,11 @@ namespace TFShop.Api
             if (string.IsNullOrWhiteSpace(basketId))
                 return new OkResult();
 
-            var items = await _itemsRepo.GetBasketItems(
-                    Guid.Parse(basketId)
-                );
+            var items = await _itemsRepo.GetBasketItems(basketId);
 
-            if (items.Count != 0)
-                return new OkObjectResult(items);
-            else
-                return new NotFoundResult();
+            return items.Count != 0 
+                ? new OkObjectResult(items) 
+                : new NotFoundResult();
         }
     }
 }

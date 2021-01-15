@@ -14,7 +14,5 @@ namespace TFShop.Services.AggregateBasket
         {
             await _table.ExecuteAsync(TableOperation.InsertOrMerge(obj));
         }
-
-
     }
 }
