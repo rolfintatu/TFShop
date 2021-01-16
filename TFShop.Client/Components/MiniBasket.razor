@@ -1,4 +1,4 @@
-﻿@inject IBasketService _basket 
+﻿@inject BasketService _basket 
 
 
 <div>
@@ -9,13 +9,4 @@
 
 @code {
 
-
-
-    private void GoToBasket()
-    { }
-
-    protected override async Task OnInitializedAsync()
-    {
-        await _basket.CreateBasket();
-    }
 }

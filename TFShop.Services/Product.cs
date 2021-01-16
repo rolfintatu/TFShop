@@ -1,5 +1,6 @@
 using Microsoft.Azure.Cosmos.Table;
 using System;
+using TFShop.Services.AggregateBasket;
 
 namespace TFShop.Services
 {
@@ -26,5 +27,26 @@ namespace TFShop.Services
             set { this.RowKey = value; } }
 
         public double Price { get; set; }
+
+        public BasketItem Zip(string basketId)
+        {
+            return new BasketItem
+            {
+                PartitionKey = basketId,
+                RowKey = this.PartitionKey,
+                Price = this.Price,
+                Name = this.Name
+            };
+        }
+
+        public BasketItem Zip()
+        {
+            return new BasketItem
+            {
+                RowKey = this.PartitionKey,
+                Price = this.Price,
+                Name = this.Name
+            };
+        }
     }
 }

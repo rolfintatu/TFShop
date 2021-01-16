@@ -19,6 +19,8 @@ namespace TFShop.Api
             builder.Services.AddScoped<ProductRepository>();
             builder.Services.AddScoped<BasketRepository>();
             builder.Services.AddTransient<BasketItemRepository>();
+            builder.Services.AddTransient<BasketBuilder, CBasketBuilder>();
+            builder.Services.AddTransient<BasketDirector>();
         }
     }
 }

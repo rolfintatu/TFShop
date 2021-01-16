@@ -25,7 +25,7 @@ namespace TFShop.Client
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(BaseAddress) });
 
             builder.Services.AddBlazoredLocalStorage(x => x.JsonSerializerOptions.WriteIndented = true);
-            builder.Services.AddTransient<IBasketService, BasketService>();
+            builder.Services.AddTransient<BasketService, CBasketService>();
 
             await builder.Build().RunAsync();
         }
