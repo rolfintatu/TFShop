@@ -20,17 +20,17 @@ namespace TFShop.Api
         private readonly BasketRepository _basketRepo;
         private readonly BasketItemRepository _itemsRepo;
         private readonly ProductRepository _productRepo;
-        private readonly BasketBuilder _basketBuilder;
+        private readonly BasketDirector _basketDirector;
 
         public BasketFunctions(BasketRepository basketRepo, 
             BasketItemRepository itemsRepo,
             ProductRepository productRepo,
-            BasketBuilder basketBuilder)
+            BasketDirector basketDirector)
         {
             _basketRepo = basketRepo ?? throw new ArgumentNullException(nameof(BasketRepository));
             _itemsRepo = itemsRepo ?? throw new ArgumentNullException(nameof(BasketRepository));
             _productRepo = productRepo ?? throw new ArgumentNullException(nameof(BasketRepository));
-            _basketBuilder = basketBuilder ?? throw new ArgumentNullException(nameof(BasketRepository));
+            _basketDirector = basketDirector ?? throw new ArgumentNullException(nameof(BasketRepository));
         }
 
         [FunctionName("CreateBasket")]
@@ -38,7 +38,7 @@ namespace TFShop.Api
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
             ILogger log)
         {
-            var basket = _basketBuilder.CreateBasket().GetBasket();
+            var basket = _basketDirector.SimpleBasketCreation();
             
             await _basketRepo.InsertOrMerge(basket);
 
@@ -50,35 +50,32 @@ namespace TFShop.Api
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
             ILogger log)
         {
-
             var itemId = req.Form["itemid"].ToString();
             var basketId = req.Form["basketId"].ToString();
 
-            var isInBasket = await _itemsRepo.IsInBasket(itemId, basketId);
-
-            if (!string.IsNullOrEmpty(basketId))
+            if (string.IsNullOrEmpty(basketId))
             {
-                if (!isInBasket)
-                {
-                    var product = await _productRepo.GetProductById(Guid.Parse(itemId));
-                    var basketItem = product.Zip(basketId);
-                    await BasketPricing(basketId, product.Price);
-                    await _itemsRepo.InsertOrMerge(basketItem);
-                    await _basketRepo.InsertOrMerge(_basketBuilder.GetBasket());
-                    return new OkResult();
-                }
-                else
-                {
-                    var basketItem = await _itemsRepo.GetItemFromBasketAsync(basketId, itemId);
-                    basketItem.IncreaseQuantity();
-                    await BasketPricing(basketId, basketItem.Price);
-                    await _itemsRepo.InsertOrMerge(basketItem);
-                    await _basketRepo.InsertOrMerge(_basketBuilder.GetBasket());
-                    return new OkResult();
-                }
-            }
+                var newBasketId = await CreateBasketWithItem(itemId);
+                return new OkObjectResult(newBasketId);
 
-            return new BadRequestResult();
+            } else if (!string.IsNullOrEmpty(basketId) && !await _basketRepo.BasketExist(basketId))
+            {
+                //if (await _itemsRepo.GetBasketItems(basketId, out List<BasketItem> items))
+                //{
+                //    var newBasket = _basketDirector.BasketWithItemsCreation(items);
+                //    await _basketRepo.InsertOrMerge(newBasket);
+                //    await _itemsRepo.InsertOrMergeRange(_basketDirector.GetAttachedItems());
+                //    return new OkObjectResult(newBasket.GetBasketIdAsString);
+                //}
+
+                var newBasketId = await CreateBasketWithItem(itemId);
+                return new OkObjectResult(newBasketId);
+            }
+            else
+            {
+                await AddIfCartExist(itemId, basketId);
+                return new OkResult();
+            }
         }
 
         [FunctionName("GetCartItems")]
@@ -90,11 +87,11 @@ namespace TFShop.Api
             var basketId = req.Query["basketId"].ToString();
 
             if (string.IsNullOrWhiteSpace(basketId))
-                return new OkResult();
+                return new NotFoundResult();
 
-            var items = await _itemsRepo.GetBasketItems(basketId);
+            await _itemsRepo.GetBasketItems(basketId, out List<BasketItem> items);
 
-            if(items.Count != 0)
+            if(items is not null)
                 return new OkObjectResult(items);
             else
                 return new NotFoundResult();
@@ -113,15 +110,51 @@ namespace TFShop.Api
 
             var basket = await _basketRepo.FetchBasket(basketId);
 
+            if (basket is null)
+            {
+                await _itemsRepo.GetBasketItems(basketId, out var basketItems);
+                basket = _basketDirector.BasketWithItemsCreation(basketItems);
+            }
+
             return new OkObjectResult(basket);
         }
 
 
-        private async Task BasketPricing(string basketId, double productPrice)
+        //Private methods
+        private async Task<Basket> BasketPricing(string basketId, double productPrice)
         {
             var basket = await _basketRepo.FetchBasket(basketId);
-            _basketBuilder.SetBasket(basket);
-            _basketBuilder.Calculate(productPrice);
+            return _basketDirector.UpdateBasketPrice(productPrice, basket);
+        }
+        private async Task AddIfCartExist(string itemId, string basketId)
+        {
+            var isInBasket = await _itemsRepo.IsInBasket(itemId, basketId);
+
+            if (!isInBasket)
+            {
+                var product = await _productRepo.GetProductById(Guid.Parse(itemId));
+                var basket = _basketDirector.UpdateBasketPrice(product.Price, await _basketRepo.FetchBasket(basketId));
+                await _basketRepo.InsertOrMerge(basket);
+                var basketItem = product.Zip(basketId);
+                await _itemsRepo.InsertOrMerge(basketItem);
+            }
+            else
+            {
+                var basketItem = await _itemsRepo.GetItemFromBasketAsync(basketId, itemId);
+                basketItem.IncreaseQuantity();
+                var basket = await BasketPricing(basketId, basketItem.Price);
+                await _itemsRepo.InsertOrMerge(basketItem);
+                await _basketRepo.InsertOrMerge(basket);
+            }
+        }
+        private async Task<string> CreateBasketWithItem(string itemId)
+        {
+            var item = await _productRepo.GetProductById(Guid.Parse(itemId));
+            var newBasket = _basketDirector.CreateBasketWithOneItem(item.Zip());
+            await _basketRepo.InsertOrMerge(newBasket);
+            await _itemsRepo.InsertOrMerge(item.Zip(newBasket.PartitionKey));
+
+            return newBasket.PartitionKey;
         }
     }
 }

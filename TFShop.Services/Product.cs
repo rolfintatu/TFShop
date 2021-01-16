@@ -38,5 +38,15 @@ namespace TFShop.Services
                 Name = this.Name
             };
         }
+
+        public BasketItem Zip()
+        {
+            return new BasketItem
+            {
+                RowKey = this.PartitionKey,
+                Price = this.Price,
+                Name = this.Name
+            };
+        }
     }
 }

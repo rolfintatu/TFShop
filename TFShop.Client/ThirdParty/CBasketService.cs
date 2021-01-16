@@ -28,9 +28,6 @@ namespace TFShop.Client.ThirdParty
         {
             var basketId = await _localStorage.GetItemAsync<string>("_basket");
 
-            if (string.IsNullOrEmpty(basketId))
-                return;
-
             var content = new Dictionary<string, string>()
             {
                 { "BasketId", basketId },
@@ -38,6 +35,13 @@ namespace TFShop.Client.ThirdParty
             };
 
             var response = await _httpClient.PostAsync("api/AddItemToBasket", new FormUrlEncodedContent(content));
+
+            if(response.IsSuccessStatusCode ^ response.Content.Headers.ContentLength == 0)
+            {
+                var contextStream = await response.Content.ReadAsStreamAsync();
+                var newBasketId = await JsonSerializer.DeserializeAsync<string>(contextStream);
+                await _localStorage.SetItemAsync("_basket", newBasketId);
+            }
         }
 
         public async Task CreateBasket()

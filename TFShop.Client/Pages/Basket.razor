@@ -2,7 +2,7 @@
 
 @inject BasketService _basket
 
-@if(items is null)
+@if (items is null && details is null)
 {
     <h1>There is no items in your basket.</h1>
 }
@@ -16,24 +16,22 @@ else
             <p>Quantity: @item.Quantity</p>
         </div>
     }
-}
 
-@if(details != null)
-{
     <div class="card">
         <h1>Subtotal: @details.Subtotal</h1>
     </div>
 }
 
 @code {
-    private List<BasketItemModel> items = new();
+    private List<BasketItemModel> items;
     private BasketDetailsModel details { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         items = await _basket.GetBasketItems();
         var basketDetails = await _basket.GetBasketDetails();
-        details = new BasketDetailsModel(basketDetails.Subtotal, basketDetails.VAT, basketDetails.Total);
+        if(basketDetails is not null)
+            details = basketDetails.ToBasketDetails();
         StateHasChanged();
     }
 }

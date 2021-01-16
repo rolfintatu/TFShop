@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TFShop.Services.Models;
 
 namespace TFShop.Services.AggregateBasket
 {
@@ -33,6 +34,11 @@ namespace TFShop.Services.AggregateBasket
         public string GetBasketIdAsString
         {
             get { return this.BasketId.ToString(); }
+        }
+
+        public BasketDetailsModel ToBasketDetails()
+        {
+            return new BasketDetailsModel(this.Subtotal, this.VAT, this.Total);
         }
     }
 }

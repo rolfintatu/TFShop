@@ -22,6 +22,16 @@ namespace TFShop.Services.AggregateBasket
                 : null;
         }
 
+        public async Task InsertOrMergeRange(ICollection<BasketItem> items)
+        {
+            List<Task> tasks = new List<Task>();
+            foreach (var item in items)
+            {
+                tasks.Add(InsertOrMerge(item));
+            }
+            await Task.WhenAll(tasks);
+        }
+
         public async Task InsertOrMerge(BasketItem item)
         {
             await _table.ExecuteAsync(TableOperation.InsertOrMerge(item));
@@ -36,12 +46,21 @@ namespace TFShop.Services.AggregateBasket
             return Task.FromResult(isInBasket == null ? false : true);
         }
 
-        public Task<List<BasketItem>> GetBasketItems(string basketId)
+        public Task<bool> GetBasketItems(string basketId, out List<BasketItem> basketItems)
         {
             var items = _table.CreateQuery<BasketItem>()
                 .Where(y => y.PartitionKey == basketId.ToString());
 
-            return Task.FromResult(items.ToList());
+            if (items.ToList().Any())
+            {
+                basketItems = items.ToList();
+                return Task.FromResult(true);
+            }
+            else
+            {
+                basketItems = null;
+                return Task.FromResult(false);
+            }
         }
     }
 }

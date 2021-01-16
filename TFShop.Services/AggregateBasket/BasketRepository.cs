@@ -28,5 +28,11 @@ namespace TFShop.Services.AggregateBasket
                 .FirstOrDefault());
         }
 
+        public async Task<bool> BasketExist(string basketId)
+        {
+            var basket = await FetchBasket(basketId);
+            return basket is null ? false : true;
+        }
+
     }
 }
