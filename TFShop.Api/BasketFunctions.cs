@@ -91,7 +91,7 @@ namespace TFShop.Api
 
             await _itemsRepo.GetBasketItems(basketId, out List<BasketItem> items);
 
-            if(items is not null)
+            if(items is not null && await _basketRepo.BasketExist(basketId))
                 return new OkObjectResult(items);
             else
                 return new NotFoundResult();
@@ -111,10 +111,7 @@ namespace TFShop.Api
             var basket = await _basketRepo.FetchBasket(basketId);
 
             if (basket is null)
-            {
-                await _itemsRepo.GetBasketItems(basketId, out var basketItems);
-                basket = _basketDirector.BasketWithItemsCreation(basketItems);
-            }
+                return new OkObjectResult(null);
 
             return new OkObjectResult(basket);
         }

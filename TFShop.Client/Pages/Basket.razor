@@ -24,14 +24,16 @@ else
 
 @code {
     private List<BasketItemModel> items;
-    private BasketDetailsModel details { get; set; }
+    private BasketDetailsModel details = null;
 
     protected override async Task OnInitializedAsync()
     {
         items = await _basket.GetBasketItems();
         var basketDetails = await _basket.GetBasketDetails();
+
         if(basketDetails is not null)
             details = basketDetails.ToBasketDetails();
+
         StateHasChanged();
     }
 }

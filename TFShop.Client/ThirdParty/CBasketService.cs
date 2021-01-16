@@ -57,12 +57,17 @@ namespace TFShop.Client.ThirdParty
 
         public async Task<Basket> GetBasketDetails()
         {
-            if(await HasABasket())
+            var basketId = await _localStorage.GetItemAsync<string>("_basket");
+            var response = await _httpClient.GetAsync($"api/GetBasketDetails?basketId={basketId}");
+
+            if (response.IsSuccessStatusCode ^ response.Content.Headers.ContentLength == 0)
             {
-                var basketId = await _localStorage.GetItemAsync<string>("_basket");
-                var basket = await _httpClient.GetFromJsonAsync<Basket>($"api/GetBasketDetails?basketId={basketId}");
+                var contextStream = await response.Content.ReadAsStreamAsync();
+                var basket = await JsonSerializer.DeserializeAsync<Basket>(contextStream
+                    , new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
                 return basket;
             }
+
             return null;
         }
 
