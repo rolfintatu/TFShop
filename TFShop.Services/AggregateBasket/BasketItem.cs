@@ -33,10 +33,9 @@ namespace TFShop.Services.AggregateBasket
         public int Quantity { get; set; } = 1;
         public double Price { get; set; }
 
-        public BasketItem IncreaseQuantity()
+        public void IncreaseQuantity()
         {
             Quantity += 1;
-            return this;
         }
     }
 }

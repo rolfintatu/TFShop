@@ -27,5 +27,11 @@ namespace TFShop.Services.AggregateBasket
         /// </summary>
         /// <returns>A list of items or null if the basket doesn't have items.</returns>
         Task<List<BasketItemModel>> GetBasketItems();
+
+        /// <summary>
+        /// Basket details like subtotal, VAT and total
+        /// </summary>
+        /// <returns>A basket with all necessary data</returns>
+        Task<Basket> GetBasketDetails();
     }
 }

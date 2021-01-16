@@ -18,12 +18,22 @@ else
     }
 }
 
+@if(details != null)
+{
+    <div class="card">
+        <h1>Subtotal: @details.Subtotal</h1>
+    </div>
+}
+
 @code {
     private List<BasketItemModel> items = new();
+    private BasketDetailsModel details { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         items = await _basket.GetBasketItems();
+        var basketDetails = await _basket.GetBasketDetails();
+        details = new BasketDetailsModel(basketDetails.Subtotal, basketDetails.VAT, basketDetails.Total);
         StateHasChanged();
     }
 }

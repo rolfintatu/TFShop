@@ -16,15 +16,19 @@ namespace TFShop.Services.AggregateBasket
         [IgnoreProperty]
         public Guid BasketId {
             get { return Guid.Parse(PartitionKey); }
-            protected set { PartitionKey = value.ToString(); }
+            set { PartitionKey = value.ToString(); }
         }
 
         [IgnoreProperty]
         public Guid BasketOwner
         {
             get { return Guid.Parse(RowKey); }
-            protected set { RowKey = value.ToString(); }
+            set { RowKey = value.ToString(); }
         }
+
+        public double Subtotal { get; set; }
+        public double VAT { get; set; }
+        public double Total { get; set; }
 
         public string GetBasketIdAsString
         {

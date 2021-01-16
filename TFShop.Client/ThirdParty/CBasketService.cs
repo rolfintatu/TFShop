@@ -12,7 +12,7 @@ using TFShop.Services.Models;
 
 namespace TFShop.Client.ThirdParty
 {
-    public class CBasketService : Services.AggregateBasket.BasketService
+    public class CBasketService : BasketService
     {
         private readonly ILocalStorageService _localStorage;
         private readonly HttpClient _httpClient;
@@ -42,19 +42,24 @@ namespace TFShop.Client.ThirdParty
 
         public async Task CreateBasket()
         {
-            //Check if already exist a basket id into local storage
-            var hasABasket = string.IsNullOrEmpty(
-                await _localStorage.GetItemAsStringAsync("_basket"))
-                ? false
-                : true;
-
-            if (!hasABasket) {
+            if (!await HasABasket()) {
                 var response = await _httpClient.PostAsync("api/CreateBasket", new StringContent(""));
                 if(response.IsSuccessStatusCode)
                     await _localStorage.SetItemAsync<string>(
                         "_basket", await response.Content.ReadAsStringAsync()
                     );
             }
+        }
+
+        public async Task<Basket> GetBasketDetails()
+        {
+            if(await HasABasket())
+            {
+                var basketId = await _localStorage.GetItemAsync<string>("_basket");
+                var basket = await _httpClient.GetFromJsonAsync<Basket>($"api/GetBasketDetails?basketId={basketId}");
+                return basket;
+            }
+            return null;
         }
 
         public async Task<List<BasketItemModel>> GetBasketItems()
@@ -77,6 +82,17 @@ namespace TFShop.Client.ThirdParty
             }
 
             return null;
+        }
+
+
+        private async Task<bool> HasABasket()
+        {
+            var hasABasket = string.IsNullOrEmpty(
+                await _localStorage.GetItemAsStringAsync("_basket"))
+                ? false
+                : true;
+
+            return hasABasket;
         }
     }
 }
