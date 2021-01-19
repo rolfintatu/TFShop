@@ -12,7 +12,7 @@ namespace TFShop.Services.AggregateBasket
         /// Create a basket if don't exist.
         /// </summary>
         /// <returns></returns>
-        Task CreateBasket();
+        //Task CreateBasket();
 
         /// <summary>
         /// Add an item/product in basket. If already exist into car will increase
