@@ -22,15 +22,39 @@ namespace TFShop.Services.AggregateBasket
             await _table.ExecuteAsync(TableOperation.InsertOrMerge(obj));
         }
 
-        public Task<Basket> FetchBasket(string basketId)
+        public async Task UpdateBasketWithItems(Basket obj)
         {
-            return Task.FromResult(_table.CreateQuery<Basket>().Where(x => x.PartitionKey == basketId)
-                .FirstOrDefault());
+            if(obj is not null)
+                await InsertOrMerge(obj);
+
+            if(obj?.Items?.Count() != 0)
+            {
+                obj.Items.ToList().ForEach(async x =>
+                {
+                    if(x.IsModify)
+                        await _itemsRepo.InsertOrMerge(x);
+                });
+            }
+        }
+
+        public Task<Basket> GetBasket(string basketId)
+        {
+            var basket = _table.CreateQuery<Basket>().Where(x => x.PartitionKey == basketId)
+                .FirstOrDefault();
+
+            if(basket is null)
+                return Task.FromResult(basket);
+            else
+            {
+                _itemsRepo.GetBasketItems(basketId, out List<BasketItem> items);
+                basket.SetItems(items ?? new());
+                return Task.FromResult(basket);
+            }
         }
 
         public async Task<bool> BasketExist(string basketId)
         {
-            var basket = await FetchBasket(basketId);
+            var basket = await GetBasket(basketId);
             return basket is null ? false : true;
         }
 

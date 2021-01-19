@@ -15,6 +15,7 @@ namespace TFShop.Services.AggregateBasket
             ProductId = productId;
             Price = price;
             Name = name;
+            IsModify = true;
         }
 
         [IgnoreProperty]
@@ -29,6 +30,9 @@ namespace TFShop.Services.AggregateBasket
             set { RowKey = value.ToString(); } 
         }
 
+        [IgnoreProperty]
+        public bool IsModify { get; set; } = false;
+
         public string Name { get; set; }
         public int Quantity { get; set; } = 1;
         public double Price { get; set; }
@@ -36,6 +40,13 @@ namespace TFShop.Services.AggregateBasket
         public void IncreaseQuantity()
         {
             Quantity += 1;
+            IsModify = true;
+        }
+
+        public void SetQuantityTo(int quantity)
+        {
+            Quantity = quantity;
+            IsModify = true;
         }
     }
 }

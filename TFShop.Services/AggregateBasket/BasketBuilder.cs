@@ -7,13 +7,9 @@ namespace TFShop.Services.AggregateBasket
 {
     public interface BasketBuilder
     {
-        BasketBuilder CreateBasket(Guid ownerId = default(Guid));
-        BasketBuilder CalculateTaxes(double price);
-        BasketBuilder CalculateTaxes();
-        BasketBuilder AdaptBasketItems(ICollection<BasketItem> basketItems);
+        void CreateBasket(Guid ownerId = default(Guid));
+        void CreateBasketWithItems(ICollection<BasketItem> basketItems);
         Basket GetBasket();
         void SetBasket(Basket obj);
-        BasketBuilder AttachAnItem(BasketItem item);
-        ICollection<BasketItem> GetBasketItems();
     }
 }
