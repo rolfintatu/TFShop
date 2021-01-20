@@ -6,7 +6,23 @@
       "statusCode": 200
     },
     {
+      "route": "/count",
+      "serve": "/index.html",
+      "statusCode": 200
+    },
+    {
+      "route": "/basket",
+      "serve": "/index.html",
+      "statusCode": 200
+    },
+    {
+      "route": "/fetchdata",
+      "serve": "/index.html",
+      "statusCode": 200
+    },
+    {
       "route": "/product",
+      "serve": "/index.html",
       "allowedRoles": [ "admin" ]
     }
   ]
