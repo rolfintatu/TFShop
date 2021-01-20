@@ -1,5 +1,14 @@
 ﻿@page "/Basket"
 
-<TFShop.Client.Components.BasketItems/>
+<TFShop.Client.Components.BasketItems OnQuantityChange="UpdateDetails" />
 
-<TFShop.Client.Components.BasketDetails/>
+<TFShop.Client.Components.BasketDetails @ref="reference"/>
+
+@code{
+    public TFShop.Client.Components.BasketDetails reference { get; set; }
+
+    private async Task UpdateDetails()
+    {
+        await reference.CalculateSubtotal();
+    }
+}

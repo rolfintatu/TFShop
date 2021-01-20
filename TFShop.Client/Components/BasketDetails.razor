@@ -13,9 +13,16 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await CalculateSubtotal();
+    }
+
+    public async Task CalculateSubtotal()
+    {
         var basketDetails = await _basket.GetBasketDetails();
 
         if (basketDetails is not null)
             details = basketDetails.ToBasketDetails();
+
+        StateHasChanged();
     }
 }

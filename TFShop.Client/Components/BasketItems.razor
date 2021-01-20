@@ -10,9 +10,8 @@ else
     @foreach (var item in items)
     {
         <div class="container-fluid">
-            <div class="card mb-2 w-75 flex-row p-2 align-items-center m-auto justify-content-between" 
-                 style="height: 150px; margin-bottom: 10px !important"
-                 >
+            <div class="card mb-2 w-75 flex-row p-2 align-items-center m-auto justify-content-between"
+                 style="height: 150px; margin-bottom: 10px !important">
 
                 <img src="./No_Image_Available.jpg" style="width: 200px;" />
 
@@ -22,10 +21,9 @@ else
                 </div>
 
                 <div class="card flex-column p-2"
-                     style="width: 70px; justify-items:center"
-                     >
+                     style="width: 70px; justify-items:center">
                     <i @onclick="@(() => IncreaseQuantityFor(item.ProductId))" class="fa fa-2x fa-sort-up align-middle" style="text-align:center"></i>
-                    <input @onchange="@((x) => SetQuantityFor(item.ProductId, x.Value))" class="align-middle fa-2x" 
+                    <input @onchange="@((x) => SetQuantityFor(item.ProductId, x.Value))" class="align-middle fa-2x"
                            style="margin:0px; padding:0px; text-align:center; border:none;" value="@item.Quantity" />
                     <i @onclick="@(() => DecreaseQuantityFor(item.ProductId))" class="fa fa-2x fa-sort-down" style="text-align:center"></i>
                 </div>
@@ -37,36 +35,41 @@ else
 @code {
     private List<BasketItemModel> items;
 
+    [Parameter] public EventCallback OnQuantityChange { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         items = await _basket.GetBasketItems();
     }
 
-    private void DecreaseQuantityFor(string prodId)
+    private async Task DecreaseQuantityFor(string prodId)
     {
         var prod = items.Find(x => x.ProductId == prodId);
 
         if (prod.Quantity == 1)
         {
             items.Remove(prod);
-            _basket.UpdateQuantityFor(prodId, prod.Quantity);
+            await _basket.UpdateQuantityFor(prodId, prod.Quantity);
+            await OnQuantityChange.InvokeAsync();
         }
         else
         {
             prod.Quantity--;
-            _basket.UpdateQuantityFor(prodId, prod.Quantity);
+            await _basket.UpdateQuantityFor(prodId, prod.Quantity);
+            await OnQuantityChange.InvokeAsync();
         }
     }
 
-    private void IncreaseQuantityFor(string prodId)
+    private async Task IncreaseQuantityFor(string prodId)
     {
         var prod = items.Find(x => x.ProductId == prodId);
         prod.Quantity++;
 
-        _basket.UpdateQuantityFor(prodId, prod.Quantity);
+        await _basket.UpdateQuantityFor(prodId, prod.Quantity);
+        await OnQuantityChange.InvokeAsync();
     }
 
-    private void SetQuantityFor(string prodId, object quantity)
+    private async Task SetQuantityFor(string prodId, object quantity)
     {
         int newQuantity = 0;
         var prod = items.Find(x => x.ProductId == prodId);
@@ -74,13 +77,14 @@ else
         {
             newQuantity = int.Parse(quantity.ToString());
             prod.Quantity = newQuantity;
-            _basket.UpdateQuantityFor(prodId, newQuantity);
+            await _basket.UpdateQuantityFor(prodId, newQuantity);
+            await OnQuantityChange.InvokeAsync();
         }
         catch (Exception)
         {
             prod.Quantity = 1;
             Console.WriteLine("Invalid input for quantity!");
-            StateHasChanged();
+            await OnQuantityChange.InvokeAsync();
         }
 
     }
