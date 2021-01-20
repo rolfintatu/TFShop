@@ -1,0 +1,47 @@
+﻿@page "/catalog"
+@inject HttpClient Http
+@inject BasketService _basket
+
+@if (products == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <h1>Catalog</h1>
+
+    <hr />
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); grid-gap: 10px; ">
+        @foreach (var product in products)
+        {
+            <div class="card" style="width: 100%">
+                <img class="card-img-top" src="./No_Image_Available.jpg" alt="Card image cap">
+                <div class="card-body">
+                    <h5 class="card-title">@product.Name</h5>
+                    <hr />
+                    <p class="card-text">Price: @product.Price</p>
+                    <button type="button"
+                            @onclick="@(() => AddToBasket(product.Id))"
+                            class="btn btn-primary">
+                        Add To Basket
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private List<TFShop.Services.Product> products = new List<TFShop.Services.Product>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        products = await Http.GetFromJsonAsync<List<TFShop.Services.Product>>("/api/GetProducts");
+    }
+
+    private async Task AddToBasket(Guid id)
+    {
+        await _basket.AddItemToBasket(id);
+    }
+}

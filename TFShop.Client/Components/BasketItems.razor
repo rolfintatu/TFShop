@@ -3,7 +3,7 @@
 
 @if (items is null)
 {
-    <h1>There is no items in your basket.</h1>
+    <p><em>@message</em></p>
 }
 else
 {
@@ -34,12 +34,15 @@ else
 
 @code {
     private List<BasketItemModel> items;
-
+    private string message = "Loading...";
     [Parameter] public EventCallback OnQuantityChange { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
+        message = "Loading...";
         items = await _basket.GetBasketItems();
+        if(items is null)
+            message = "There are no items in your basket.";
     }
 
     private async Task DecreaseQuantityFor(string prodId)
