@@ -1,0 +1,21 @@
+﻿@inject BasketService _basket
+
+@if (details is not null)
+{
+    <div class="card flex-row-reverse w-75 m-auto p-2">
+        <h1>Subtotal: @details.Subtotal</h1>
+    </div>
+}
+
+
+@code {
+    private BasketDetailsModel details = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var basketDetails = await _basket.GetBasketDetails();
+
+        if (basketDetails is not null)
+            details = basketDetails.ToBasketDetails();
+    }
+}

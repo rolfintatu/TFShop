@@ -66,7 +66,7 @@ namespace TFShop.Services.AggregateBasket
         {
             if (!(quantity is default(int)))
             {
-                _items.Find(x => x.RowKey == itemId).Quantity = quantity;
+                _items.Find(x => x.RowKey == itemId).SetQuantityTo(quantity);
             }
             else
             {

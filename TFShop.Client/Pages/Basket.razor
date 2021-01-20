@@ -1,39 +1,5 @@
 ﻿@page "/Basket"
 
-@inject BasketService _basket
+<TFShop.Client.Components.BasketItems/>
 
-@if (items is null && details is null)
-{
-    <h1>There is no items in your basket.</h1>
-}
-else
-{
-    @foreach (var item in items)
-    {
-        <div class="card mb-2">
-            <p>Id: @item.Name</p>
-            <p>Price: @item.Price</p>
-            <p>Quantity: @item.Quantity</p>
-        </div>
-    }
-
-    <div class="card">
-        <h1>Subtotal: @details.Subtotal</h1>
-    </div>
-}
-
-@code {
-    private List<BasketItemModel> items;
-    private BasketDetailsModel details = null;
-
-    protected override async Task OnInitializedAsync()
-    {
-        items = await _basket.GetBasketItems();
-        var basketDetails = await _basket.GetBasketDetails();
-
-        if(basketDetails is not null)
-            details = basketDetails.ToBasketDetails();
-
-        StateHasChanged();
-    }
-}
+<TFShop.Client.Components.BasketDetails/>

@@ -37,7 +37,7 @@ namespace TFShop.Services.AggregateBasket
             }
         }
 
-        public Task<Basket> GetBasket(string basketId)
+        public Task<Basket> GetBasketAsync(string basketId)
         {
             var basket = _table.CreateQuery<Basket>().Where(x => x.PartitionKey == basketId)
                 .FirstOrDefault();
@@ -54,7 +54,7 @@ namespace TFShop.Services.AggregateBasket
 
         public async Task<bool> BasketExist(string basketId)
         {
-            var basket = await GetBasket(basketId);
+            var basket = await GetBasketAsync(basketId);
             return basket is null ? false : true;
         }
 
