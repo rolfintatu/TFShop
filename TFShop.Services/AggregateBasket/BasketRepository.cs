@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
+using TFShop.Services.Enums;
 
 namespace TFShop.Services.AggregateBasket
 {
@@ -31,13 +32,15 @@ namespace TFShop.Services.AggregateBasket
             {
                 obj.Items.ToList().ForEach(async x =>
                 {
-                    if(x.IsModify)
+                    if (x.ItemStatus == BasketItemStatus.Added || x.ItemStatus == BasketItemStatus.Modified)
                         await _itemsRepo.InsertOrMerge(x);
+                    else
+                        await _itemsRepo.RemoveItemFromCart(x);
                 });
             }
         }
 
-        public Task<Basket> GetBasket(string basketId)
+        public Task<Basket> GetBasketAsync(string basketId)
         {
             var basket = _table.CreateQuery<Basket>().Where(x => x.PartitionKey == basketId)
                 .FirstOrDefault();
@@ -54,7 +57,7 @@ namespace TFShop.Services.AggregateBasket
 
         public async Task<bool> BasketExist(string basketId)
         {
-            var basket = await GetBasket(basketId);
+            var basket = await GetBasketAsync(basketId);
             return basket is null ? false : true;
         }
 

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using TFShop.Services.Enums;
 using TFShop.Services.Models;
 
 namespace TFShop.Services.AggregateBasket
@@ -62,11 +63,11 @@ namespace TFShop.Services.AggregateBasket
             }
         }
 
-        public void IncreaseItemQuantity(string itemId, int quantity = default(int))
+        public void UpdateQuantity(string itemId, int quantity = default(int))
         {
-            if (!(quantity is default(int)))
+            if (quantity is not 0)
             {
-                _items.Find(x => x.RowKey == itemId).Quantity = quantity;
+                _items.Find(x => x.RowKey == itemId).SetQuantityTo(quantity);
             }
             else
             {
@@ -79,10 +80,11 @@ namespace TFShop.Services.AggregateBasket
         public void RemoveItem(Guid itemId)
         {
             var item = _items.Find(x => x.RowKey == itemId.ToString());
-            if (item is not null)
-                _items.Remove(item);
 
-            CalculateSubtotal();
+            if (item is not null)
+                item.ItemStatus = BasketItemStatus.Removed;
+
+            CalculateSubtotal(); 
         }
 
         public string GetBasketIdAsString
@@ -99,12 +101,15 @@ namespace TFShop.Services.AggregateBasket
         //Private methods
         private void CalculateSubtotal()
         {
-            this.Subtotal = 0;
-            _items.ToList().ForEach(x =>
-            {
-                this.Subtotal += (x.Price * x.Quantity);
-            });
-        }
+            var subtotal = 0.0D;
 
+            _items.OrderBy(x => x.ItemStatus).ToList().ForEach(x =>
+            {
+                if(x.ItemStatus is not BasketItemStatus.Removed)
+                    subtotal += (x.Price * x.Quantity);
+            });
+
+            this.Subtotal = subtotal;
+        }
     }
 }

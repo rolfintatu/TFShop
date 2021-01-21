@@ -37,7 +37,7 @@ namespace TFShop.Client.ThirdParty
 
             var response = await _httpClient.PostAsync("api/AddItemToBasket", new FormUrlEncodedContent(content));
 
-            var newBasketId = await GetResponse<string>(response);
+            var newBasketId = await GetResponse<string>(response); 
 
             if(newBasketId != null)
                 await _localStorage.SetItemAsync("_basket", newBasketId);
@@ -76,8 +76,22 @@ namespace TFShop.Client.ThirdParty
             return result;
         }
 
+        public async Task UpdateQuantityFor(string itemId, int quantity)
+        {
+            var basketId = await _localStorage.GetItemAsStringAsync("_basket");
 
-        public async Task<T> GetResponse<T>(HttpResponseMessage response)
+
+            var content = new Dictionary<string, string>()
+            {
+                {"basketId", basketId },
+                {"itemId", itemId },
+                {"newQuantity",  quantity.ToString()}
+            };
+
+            await _httpClient.PostAsync("api/UpdateQuantity", new FormUrlEncodedContent(content));
+        }
+
+        private async Task<T> GetResponse<T>(HttpResponseMessage response)
         {
             if (response.StatusCode == HttpStatusCode.OK)
             {

@@ -100,12 +100,34 @@ namespace TFShop.Api
             if (string.IsNullOrWhiteSpace(basketId))
                 return new BadRequestResult();
 
-            var basket = await _basketRepo.GetBasket(basketId);
+            var basket = await _basketRepo.GetBasketAsync(basketId);
 
             if (basket is null)
                 return new OkObjectResult(null);
 
             return new OkObjectResult(basket);
+        }
+
+        [FunctionName("UpdateQuantity")]
+        public async Task<IActionResult> UpdateQuantity(
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
+            ILogger log
+            )
+        {
+            var basketId = req.Form["basketId"].ToString();
+            var itemId = req.Form["itemId"].ToString();
+            var quantity = req.Form["newQuantity"].ToString();
+
+            var basket = await _basketRepo.GetBasketAsync(basketId);
+
+            if (int.Parse(quantity) == 0)
+                basket.RemoveItem(Guid.Parse(itemId));
+            else
+                basket.UpdateQuantity(itemId, int.Parse(quantity));
+
+            await _basketRepo.UpdateBasketWithItems(basket);
+
+            return new OkResult();
         }
 
         //Private methods
@@ -117,14 +139,14 @@ namespace TFShop.Api
             if (!isInBasket)
             {
                 var product = await _productRepo.GetProductById(Guid.Parse(itemId));
-                var basket = await _basketRepo.GetBasket(basketId);
+                var basket = await _basketRepo.GetBasketAsync(basketId);
                 basket.AddItem(itemId, product.Price, product.Name);
                 await _basketRepo.UpdateBasketWithItems(basket);
             }
             else
             {
-                var basket = await _basketRepo.GetBasket(basketId);
-                basket.IncreaseItemQuantity(itemId);
+                var basket = await _basketRepo.GetBasketAsync(basketId);
+                basket.UpdateQuantity(itemId);
                 await _basketRepo.UpdateBasketWithItems(basket);
             }
         }
@@ -138,5 +160,13 @@ namespace TFShop.Api
 
             return newBasket.PartitionKey;
         }
+    }
+
+
+    public class UpdateQuantityModel
+    {
+        public string BasketId { get; set; }
+        public string ItemId { get; set; }
+        public string NewQuantity { get; set; }
     }
 }

@@ -33,5 +33,7 @@ namespace TFShop.Services.AggregateBasket
         /// </summary>
         /// <returns>A basket with all necessary data</returns>
         Task<Basket> GetBasketDetails();
+
+        Task UpdateQuantityFor(string itemId, int quantity);
     }
 }

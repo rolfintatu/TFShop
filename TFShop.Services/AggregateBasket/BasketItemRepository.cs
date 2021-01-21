@@ -62,5 +62,10 @@ namespace TFShop.Services.AggregateBasket
                 return Task.FromResult(false);
             }
         }
+
+        public async Task RemoveItemFromCart(BasketItem item)
+        {
+            await _table.ExecuteAsync(TableOperation.Delete(item));
+        }
     }
 }
