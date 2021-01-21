@@ -2,8 +2,22 @@
 
 @if (details is not null && details.Subtotal != 0)
 {
-    <div class="card flex-row-reverse w-75 m-auto p-2">
-        <h1>Subtotal: @details.Subtotal</h1>
+    <div class="card flex-column align-items-end w-75 m-auto p-2">
+        <div class="d-flex flex-row justify-content-between w-100" >
+            <h3>Subtotal</h3>
+            <h3>@details.Subtotal.ToString("C")</h3>
+        </div>
+
+        <div class="d-flex flex-row justify-content-between w-100" >
+            <h3>VAT</h3>
+            <h3>@details.VAT.ToString("C")</h3>
+        </div>
+        <hr/>
+        <div class="d-flex flex-row justify-content-between w-100" >
+            <h1>Total</h1>
+            <h1>@details.Total.ToString("C")</h1>
+        </div>
+
     </div>
 }
 

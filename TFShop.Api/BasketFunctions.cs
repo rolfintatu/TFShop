@@ -161,12 +161,4 @@ namespace TFShop.Api
             return newBasket.PartitionKey;
         }
     }
-
-
-    public class UpdateQuantityModel
-    {
-        public string BasketId { get; set; }
-        public string ItemId { get; set; }
-        public string NewQuantity { get; set; }
-    }
 }
