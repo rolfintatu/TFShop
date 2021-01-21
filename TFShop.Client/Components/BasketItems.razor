@@ -7,29 +7,34 @@
 }
 else
 {
-    @foreach (var item in items)
-    {
-        <div class="container-fluid">
-            <div class="card mb-2 w-75 flex-row p-2 align-items-center m-auto justify-content-between"
+    <div class="container-fluid p-0 flex-column">
+        @foreach (var item in items)
+        {
+            <div id="item-res" class="card d-flex mb-2 w-75 flex-row p-2 align-items-center m-auto justify-content-between"
                  style="height: 150px; margin-bottom: 10px !important">
 
                 <img src="./No_Image_Available.jpg" style="width: 200px;" />
 
-                <div class="flex-column p-3 w-auto">
-                    <h1 class="mr-3">@item.Name</h1>
-                    <p class="mr-3">Price: @item.Price</p>
-                </div>
+                <div class="card flex-row w-100 border-0 bg-transparent align-items-center m-auto justify-content-between">
+                    
+                     <div class="flex-column p-3 w-auto">
+                        <h1 class="mr-3">@item.Name</h1>
+                        <p class="mr-3">Price: @item.Price.ToString("C")</p>
+                    </div>
 
-                <div class="card flex-column p-2"
-                     style="width: 70px; justify-items:center">
-                    <i @onclick="@(() => IncreaseQuantityFor(item.ProductId))" class="fa fa-2x fa-sort-up align-middle" style="text-align:center"></i>
-                    <input @onchange="@((x) => SetQuantityFor(item.ProductId, x.Value))" class="align-middle fa-2x"
-                           style="margin:0px; padding:0px; text-align:center; border:none;" value="@item.Quantity" />
-                    <i @onclick="@(() => DecreaseQuantityFor(item.ProductId))" class="fa fa-2x fa-sort-down" style="text-align:center"></i>
+                    <div class="card flex-column p-2 bg-transparent"
+                            style="width: 70px; justify-items:center">
+                        <i @onclick="@(() => IncreaseQuantityFor(item.ProductId))" class="fa fa-2x fa-sort-up align-middle" style="text-align:center"></i>
+                        <input @onchange="@((x) => SetQuantityFor(item.ProductId, x.Value))" 
+                               class="align-middle fa-2x m-0 p-0 text-center border-0 bg-transparent"
+                               value="@item.Quantity" />
+                        <i @onclick="@(() => DecreaseQuantityFor(item.ProductId))" class="fa fa-2x fa-sort-down" style="text-align:center"></i>
+                    </div>
+
                 </div>
             </div>
-        </div>
-    }
+            }
+    </div>
 }
 
 @code {

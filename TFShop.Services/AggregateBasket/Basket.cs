@@ -55,11 +55,13 @@ namespace TFShop.Services.AggregateBasket
             {
                 basketItem.IncreaseQuantity();
                 CalculateSubtotal();
+                CalculateTotal();
             }
             else
             {
                 _items.Add(new BasketItem(Guid.Parse(this.PartitionKey), Guid.Parse(itemId), price, name));
                 CalculateSubtotal();
+                CalculateTotal();
             }
         }
 
@@ -75,6 +77,7 @@ namespace TFShop.Services.AggregateBasket
             }
 
             CalculateSubtotal();
+            CalculateTotal();
         }
 
         public void RemoveItem(Guid itemId)
@@ -84,7 +87,8 @@ namespace TFShop.Services.AggregateBasket
             if (item is not null)
                 item.ItemStatus = BasketItemStatus.Removed;
 
-            CalculateSubtotal(); 
+            CalculateSubtotal();
+            CalculateTotal();
         }
 
         public string GetBasketIdAsString
@@ -110,6 +114,11 @@ namespace TFShop.Services.AggregateBasket
             });
 
             this.Subtotal = subtotal;
+        }
+        private void CalculateTotal()
+        {
+            this.VAT = Subtotal * 0.19;
+            Total = Subtotal + VAT;
         }
     }
 }
