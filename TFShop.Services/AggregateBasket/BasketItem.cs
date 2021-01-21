@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TFShop.Services.Enums;
 
 namespace TFShop.Services.AggregateBasket
 {
@@ -15,7 +16,7 @@ namespace TFShop.Services.AggregateBasket
             ProductId = productId;
             Price = price;
             Name = name;
-            IsModify = true;
+            ItemStatus = BasketItemStatus.Added;
         }
 
         [IgnoreProperty]
@@ -31,7 +32,8 @@ namespace TFShop.Services.AggregateBasket
         }
 
         [IgnoreProperty]
-        public bool IsModify { get; set; } = false;
+        public BasketItemStatus ItemStatus { get; set; }
+
 
         public string Name { get; set; }
         public int Quantity { get; set; } = 1;
@@ -40,13 +42,13 @@ namespace TFShop.Services.AggregateBasket
         public void IncreaseQuantity()
         {
             Quantity += 1;
-            IsModify = true;
+            ItemStatus = BasketItemStatus.Modified;
         }
 
         public void SetQuantityTo(int quantity)
         {
             Quantity = quantity;
-            IsModify = true;
+            ItemStatus = BasketItemStatus.Modified;
         }
     }
 }

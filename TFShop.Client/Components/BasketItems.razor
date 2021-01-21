@@ -48,16 +48,16 @@ else
     private async Task DecreaseQuantityFor(string prodId)
     {
         var prod = items.Find(x => x.ProductId == prodId);
+        prod.Quantity--;
 
-        if (prod.Quantity == 1)
+        if (prod.Quantity < 1)
         {
             items.Remove(prod);
-            await _basket.UpdateQuantityFor(prodId, prod.Quantity);
+            await _basket.UpdateQuantityFor(prodId, 0);
             await OnQuantityChange.InvokeAsync();
         }
         else
         {
-            prod.Quantity--;
             await _basket.UpdateQuantityFor(prodId, prod.Quantity);
             await OnQuantityChange.InvokeAsync();
         }
@@ -79,6 +79,9 @@ else
         try
         {
             newQuantity = int.Parse(quantity.ToString());
+            if (newQuantity == 0)
+                items.Remove(prod);
+
             prod.Quantity = newQuantity;
             await _basket.UpdateQuantityFor(prodId, newQuantity);
             await OnQuantityChange.InvokeAsync();

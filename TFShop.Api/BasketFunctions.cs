@@ -119,7 +119,12 @@ namespace TFShop.Api
             var quantity = req.Form["newQuantity"].ToString();
 
             var basket = await _basketRepo.GetBasketAsync(basketId);
-            basket.IncreaseItemQuantity(itemId, int.Parse(quantity));
+
+            if (int.Parse(quantity) == 0)
+                basket.RemoveItem(Guid.Parse(itemId));
+            else
+                basket.UpdateQuantity(itemId, int.Parse(quantity));
+
             await _basketRepo.UpdateBasketWithItems(basket);
 
             return new OkResult();
@@ -141,7 +146,7 @@ namespace TFShop.Api
             else
             {
                 var basket = await _basketRepo.GetBasketAsync(basketId);
-                basket.IncreaseItemQuantity(itemId);
+                basket.UpdateQuantity(itemId);
                 await _basketRepo.UpdateBasketWithItems(basket);
             }
         }
