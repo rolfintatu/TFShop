@@ -65,7 +65,7 @@ namespace TFShop.Services.AggregateBasket
 
         public void UpdateQuantity(string itemId, int quantity = default(int))
         {
-            if (!(quantity is default(int)))
+            if (quantity is not 0)
             {
                 _items.Find(x => x.RowKey == itemId).SetQuantityTo(quantity);
             }
@@ -84,7 +84,7 @@ namespace TFShop.Services.AggregateBasket
             if (item is not null)
                 item.ItemStatus = BasketItemStatus.Removed;
 
-            CalculateSubtotal();
+            CalculateSubtotal(); 
         }
 
         public string GetBasketIdAsString
@@ -101,17 +101,15 @@ namespace TFShop.Services.AggregateBasket
         //Private methods
         private void CalculateSubtotal()
         {
-            _items.ToList().ForEach(x =>
-            {
-                if(x.ItemStatus is BasketItemStatus.Removed)
-                    this.Subtotal -= (x.Price * x.Quantity);
-                else
-                {
-                    this.Subtotal = 0.0D;
-                    this.Subtotal += (x.Price * x.Quantity);
-                }
-            });
-        }
+            var subtotal = 0.0D;
 
+            _items.OrderBy(x => x.ItemStatus).ToList().ForEach(x =>
+            {
+                if(x.ItemStatus is not BasketItemStatus.Removed)
+                    subtotal += (x.Price * x.Quantity);
+            });
+
+            this.Subtotal = subtotal;
+        }
     }
 }

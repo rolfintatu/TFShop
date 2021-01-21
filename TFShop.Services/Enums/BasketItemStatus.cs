@@ -7,7 +7,7 @@ namespace TFShop.Services.Enums
     public enum BasketItemStatus
     {
         Added,
-        Removed,
-        Modified
+        Modified,
+        Removed
     }
 }
