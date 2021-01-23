@@ -16,7 +16,7 @@
       "statusCode": 200
     },
     {
-      "route": "/fetchdata",
+      "route": "/catalog",
       "serve": "/index.html",
       "statusCode": 200
     },
