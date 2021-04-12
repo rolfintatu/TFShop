@@ -27,5 +27,5 @@ I've started this application to learn and deepen:
 
 ## Challenges
 
-- First challenge for me was basket creation. First time when I **implement** this was something like this: when a client reach the site a basket will be created and a reference (GUID) to his basket will be stored in local storage. But the **problem** was: if the client did not want to buy and he was searching for informations about a product, then the batabase will be populated with unnecessary data. My **solution** was: if the client want to buy something he will add that product to his basket, so I added basket creation when a product is added to the basket. I konw, with this solution I violated the Single Responsability Principle.
+- First challenge for me was basket creation. First time when I **implement** this was something like this: when a client reach the site a basket will be created and a reference (GUID) to his basket will be stored in local storage. But the **problem** was: if the client did not want to buy and he was searching for information about a product, then the database will be populated with unnecessary data. My **solution** was: if the client want to buy something he will add that product to his basket, so I added basket creation when a product is added to the basket. I konw, with this solution I violated the Single Responsability Principle.
 
